@@ -1,0 +1,42 @@
+#ifndef PULSE_INTERRUPT_H
+#define PULSE_INTERRUPT_H
+
+#include "application.h"
+#include "SparkIntervalTimer.h"
+
+volatile int rate[10];                    // array to hold last ten IBI values
+volatile unsigned long sampleCounter = 0;          // used to determine pulse timing
+volatile unsigned long lastBeatTime = 0;           // used to find IBI
+volatile int P =512;                      // used to find peak in pulse wave, seeded
+volatile int T = 512;                     // used to find trough in pulse wave, seeded
+volatile int thresh = 512;                // used to find instant moment of heart beat, seeded
+volatile int amp = 100;                   // used to hold amplitude of pulse waveform, seeded
+volatile boolean firstBeat = true;        // used to seed rate array so we startup with reasonable BPM
+volatile boolean secondBeat = false;      // used to seed rate array so we startup with reasonable BPM
+
+// these variables are volatile because they are used during the interrupt service routine!
+volatile int BPM;                   // used to hold the pulse rate
+volatile int Signal;                // holds the incoming raw data
+volatile int IBI = 600;             // holds the time between beats, must be seeded! 
+volatile boolean Pulse = false;     // true when pulse wave is high, false when it's low
+volatile boolean QS = false;        // becomes true when Arduoino finds a beat.
+
+// SparkIntervalTimer uses hardware timers that are otherwise allocated for PIN functions (ADC/PWM)
+// The first allocated timer is TIMR2 which is assigned to A0 & A1 ADC channels
+// So use A2 for pulse input, D7 (onboard LED) for blink LED and D6 for fancy LED
+//  VARIABLES
+int pulsePin = A0;                 // Pulse Sensor purple wire connected to analog pin 0
+int blinkPin = D7;                // pin to blink led at each beat
+
+void interruptSetup();
+void pulseISR(void);
+
+// Setup a 2ms h/w timer
+//extern IntervalTimer pulseTimer;
+IntervalTimer pulseTimer;
+
+#endif
+
+
+
+
