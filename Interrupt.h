@@ -22,11 +22,13 @@ volatile boolean Pulse = false;     // true when pulse wave is high, false when 
 volatile boolean QS = false;        // becomes true when Arduoino finds a beat.
 
 // SparkIntervalTimer uses hardware timers that are otherwise allocated for PIN functions (ADC/PWM)
-// The first allocated timer is TIMR2 which is assigned to A0 & A1 ADC channels
-// So use A2 for pulse input, D7 (onboard LED) for blink LED and D6 for fancy LED
+// The first allocated timer is TIMR2 which is assigned to A0 & A1 ADC/PWM channels
+// So use A2 (though A0 & A1 ADC should still work) for pulse input, D7 (onboard LED) for blink LED and D6 for fancy LED
 //  VARIABLES
-int pulsePin = A0;                 // Pulse Sensor purple wire connected to analog pin 0
-int blinkPin = D7;                // pin to blink led at each beat
+int pulsePin = A2;				// Pulse Sensor purple wire connected to analog pin 0
+int blinkPin = D7;				// pin to blink led at each beat
+int fadePin = D6;				// pin to do fancy classy fading blink at each beat
+int fadeRate = 0;				// used to fade LED on with PWM on fadePin
 
 void interruptSetup();
 void pulseISR(void);

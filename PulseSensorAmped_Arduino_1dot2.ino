@@ -2,9 +2,10 @@
 >> Pulse Sensor Amped 1.2 <<
 This code is for Pulse Sensor Amped by Joel Murphy and Yury Gitman
     www.pulsesensor.com 
-    >>> Pulse Sensor purple wire goes to Analog Pin 0 <<<
-Pulse Sensor sample aquisition and processing happens in the background via Timer 2 interrupt. 2mS sample rate.
-PWM on pins 3 and 11 will not work when using this code, because we are using Timer 2!
+    >>> Pulse Sensor purple wire goes to Analog Pin A2 (see Interrupt.h for details) <<<
+	
+Pulse Sensor sample aquisition and processing happens in the background via a hardware Timer interrupt. 2mS sample rate.
+PWM on selectable pins A0 and A1 will not work when using this code, because the first allocated timer is TIMR2!
 The following variables are automatically updated:
 Signal :    int that holds the analog signal data straight from the sensor. updated every 2mS.
 IBI  :      int that holds the time interval between beats. 2mS resolution.
@@ -15,14 +16,16 @@ Pulse :     boolean that is true when a heartbeat is sensed then false in time w
 This code is designed with output serial data to Processing sketch "PulseSensorAmped_Processing-xx"
 The Processing sketch is a simple data visualizer. 
 All the work to find the heartbeat and determine the heartrate happens in the code below.
-Pin 13 LED will blink with heartbeat.
-If you want to use pin 13 for something else, adjust the interrupt handler
+Pin D7 LED (onboard LED) will blink with heartbeat.
+If you want to use pin D7 for something else, specifiy different pin in Interrupt.h
 It will also fade an LED on pin fadePin with every beat. Put an LED and series resistor from fadePin to GND.
 Check here for detailed code walkthrough:
 http://pulsesensor.myshopify.com/pages/pulse-sensor-amped-arduino-v1dot1
 
 Code Version 1.2 by Joel Murphy & Yury Gitman  Spring 2013
 This update fixes the firstBeat and secondBeat flag usage so that realistic BPM is reported.
+
+>>> Adapted for Spark Core by Paul Kourany, May 2014 <<<
 
 */
 //#include "Interrupt.h"
@@ -36,8 +39,8 @@ extern volatile int IBI;
 extern volatile boolean Pulse;
 extern volatile boolean QS;
 
-int fadePin = D6;                  // pin to do fancy classy fading blink at each beat
-int fadeRate = 0;                 // used to fade LED on with PWM on fadePin
+extern int fadePin;
+extern int fadeRate;
 
 void setup(){
   pinMode(blinkPin,OUTPUT);         // pin that will blink to your heartbeat!
