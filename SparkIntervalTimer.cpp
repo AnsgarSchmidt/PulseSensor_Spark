@@ -32,7 +32,7 @@ IntervalTimer::ISRcallback IntervalTimer::SIT_CALLBACK[];
 // TIM2, TIM3 and TIM4 with callbacks to user code.
 // These default as infinite loop stubs by Spark
 // ------------------------------------------------------------
-extern "C" void TIM2_IRQHandler()
+extern "C" void Wiring_TIM2_Interrupt_Handler_override()
 {
 	if (TIM_GetITStatus(TIM2, TIM_IT_Update) != RESET)
 	{
@@ -42,7 +42,7 @@ extern "C" void TIM2_IRQHandler()
 	}
 }
 
-extern "C" void TIM3_IRQHandler()
+extern "C" void Wiring_TIM3_Interrupt_Handler_override()
 {
 	if (TIM_GetITStatus(TIM3, TIM_IT_Update) != RESET)
 	{
@@ -52,7 +52,7 @@ extern "C" void TIM3_IRQHandler()
 	}
 }
 
-extern "C" void TIM4_IRQHandler()
+extern "C" void Wiring_TIM4_Interrupt_Handler_override()
 {
 	if (TIM_GetITStatus(TIM4, TIM_IT_Update) != RESET)
 	{
@@ -234,3 +234,46 @@ void IntervalTimer::stop_SIT() {
 	SIT_used[SIT_id] = false;
 }
 
+// ------------------------------------------------------------
+// Enables or disables an active SIT's interrupt without
+// removing the SIT.
+// ------------------------------------------------------------
+void IntervalTimer::interrupt_SIT(action ACT)
+{
+    NVIC_InitTypeDef nvicStructure;
+	TIM_TypeDef* TIMx;
+
+	//use SIT_id to identify TIM#
+	switch (SIT_id) {
+	case 0:		// TIM2
+		nvicStructure.NVIC_IRQChannel = TIM2_IRQn;
+		TIMx = TIM2;
+		break;
+	case 1:		// TIM3
+		nvicStructure.NVIC_IRQChannel = TIM3_IRQn;
+		TIMx = TIM3;
+		break;
+	case 2:		// TIM4
+		nvicStructure.NVIC_IRQChannel = TIM4_IRQn;
+		TIMx = TIM4;
+		break;
+	}
+
+	switch (ACT) {
+	case INT_ENABLE:
+		//Enable Timer Interrupt
+		nvicStructure.NVIC_IRQChannelPreemptionPriority = 0;
+		nvicStructure.NVIC_IRQChannelSubPriority = 1;
+		nvicStructure.NVIC_IRQChannelCmd = ENABLE;
+		NVIC_Init(&nvicStructure);
+		break;
+	case INT_DISABLE:
+		// disable interrupt
+		nvicStructure.NVIC_IRQChannelCmd = DISABLE;
+		NVIC_Init(&nvicStructure);
+		break;
+	default:
+		//Do nothing
+		break;
+	}
+}
