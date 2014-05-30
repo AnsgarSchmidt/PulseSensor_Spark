@@ -3,7 +3,7 @@
 This code is for Pulse Sensor Amped by Joel Murphy and Yury Gitman
     www.pulsesensor.com 
     >>> Pulse Sensor purple wire goes to Analog Pin A2 (see Interrupt.h for details) <<<
-	
+  
 Pulse Sensor sample aquisition and processing happens in the background via a hardware Timer interrupt. 2mS sample rate.
 PWM on selectable pins A0 and A1 will not work when using this code, because the first allocated timer is TIMR2!
 The following variables are automatically updated:
@@ -28,13 +28,13 @@ This update fixes the firstBeat and secondBeat flag usage so that realistic BPM 
 >>> Adapted for Spark Core by Paul Kourany, May 2014 <<<
 
 */
-//#include "Interrupt.h"
+#include "SparkIntervalTimer.h"
 void interruptSetup(void);
 
 extern int pulsePin;
 extern int blinkPin;
-extern volatile int BPM;;
-extern volatile int Signal;;
+extern volatile int BPM;
+extern volatile int Signal;
 extern volatile int IBI;
 extern volatile boolean Pulse;
 extern volatile boolean QS;
@@ -55,6 +55,7 @@ void setup(){
 
 
 void loop(){
+  Signal = (int)map(Signal, 0, 4096, 0, 1023); // The processing sketch expects values from 0-1023, so map it to be compatible with the arduino code
   sendDataToProcessing('S', Signal);     // send Processing the raw Pulse Sensor data
   if (QS == true){                       // Quantified Self flag is true when arduino finds a heartbeat
         fadeRate = 255;                  // Set 'fadeRate' Variable to 255 to fade LED with pulse
@@ -80,7 +81,6 @@ void sendDataToProcessing(char symbol, int data ){
     Serial.print(symbol);                // symbol prefix tells Processing what type of data is coming
     Serial.println(data);                // the data to send culminating in a carriage return
   }
-
 
 
 
