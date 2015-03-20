@@ -23,7 +23,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
 #ifndef __INTERVALTIMER_H__
 #define __INTERVALTIMER_H__
 
-#include "Spark.h"
+#include "spark.h"
 
 
 enum {uSec, hmSec};			// microseconds or half-milliseconds
