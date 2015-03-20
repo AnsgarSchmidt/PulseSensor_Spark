@@ -1,7 +1,7 @@
 {
 	"name": "PulseSensor_Spark",
 	"author": "Paul Kourany",
-	"version": "1.2.1",
+	"version": "1.2.2",
 	"license": "CreativeCommons",
 	"description": "PulseSensor library for Spark"
 }
